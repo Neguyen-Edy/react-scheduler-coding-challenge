@@ -3,5 +3,14 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "baseUrl": "./", // Sets the base directory for resolving non-relative module names
+    "paths": {
+      "@components/*": ["src/components/*"], // Alias for components folder
+      "@types/*": ["types/*"],
+      "@data/*": ["data/*"],
+    },
+    "strict": true,
+  },
 }
