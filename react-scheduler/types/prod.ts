@@ -16,4 +16,4 @@ interface Resource {
     status: ResourceStatus,
 }
 
-export { Order, Resource };
+export type { Order, Resource };

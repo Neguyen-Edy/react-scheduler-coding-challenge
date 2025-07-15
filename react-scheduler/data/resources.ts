@@ -1,4 +1,4 @@
-import { Resource } from "../types/prod";
+import type { Resource } from "../types/prod";
 
 const predefinedResources : Resource[] = [
     { id: '1', name: 'CNC Machine', status: 'Available' },
