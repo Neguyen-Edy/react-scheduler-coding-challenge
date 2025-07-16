@@ -56,7 +56,7 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, nextId, submit
 
         <div>
           <label className='block'> Start Time </label>
-          <input {...register("startTime", { required: "Start Date Required" })} type='datetime-local' className='rounded-4xl w-full p-4'></input>
+          <input {...register("startTime", { required: "Start Date Required" })} type='datetime-local' className='rounded-4xl w-2/3 p-4'></input>
           <div>
             {errors.startTime && <span> {errors.startTime.message} </span>}
           </div>
@@ -64,7 +64,7 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, nextId, submit
 
         <div>
           <label className='block'> End Time </label>
-          <input {...register("endTime", { required: "End Date Required" })} type='datetime-local' className='rounded-4xl w-full p-4'></input>
+          <input {...register("endTime", { required: "End Date Required" })} type='datetime-local' className='rounded-4xl w-2/3 p-4'></input>
           <div>
             {errors.endTime && <span> {errors.endTime.message} </span>}
           </div>

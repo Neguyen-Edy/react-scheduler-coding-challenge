@@ -1,21 +1,20 @@
 'use client';
 
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import OrderForm from '../../../components/OrderForm';
-import { Order } from '../../../../types/prod';
 import predefinedResources from '../../../../data/resources';
 import { useRouter } from 'next/navigation';
+import { useOrderContext } from '@/app/layout';
 
 const Page = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
   const nextId = useRef(0);
-  const [resources] = useState(predefinedResources);
   const router = useRouter();
+  const {orders, setOrders} = useOrderContext();
 
   return (
     <>
       <div className='bg-indigo-950/20'>Orders</div>
-      <OrderForm orders={orders} setOrders={setOrders} resources={resources} nextId={nextId} submitSuccess={(() => router.push('/orders'))}/>
+      <OrderForm orders={orders} setOrders={setOrders} resources={predefinedResources} nextId={nextId} submitSuccess={(() => router.push('/orders'))}/>
     </>
   )
 };
