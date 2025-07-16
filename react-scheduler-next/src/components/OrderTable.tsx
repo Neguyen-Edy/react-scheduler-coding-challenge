@@ -23,8 +23,10 @@ const columns = [
     header: () => <span>Resource Id</span>,
     footer: info => info.column.id,
   }),
-  columnHelper.accessor('status', {
-    header: 'Status',
+  columnHelper.accessor(row => row.status, {
+    id: 'Status',
+    cell: info => <i>{info.getValue()}</i>,
+    header: () => <span>Status</span>,
     footer: info => info.column.id,
   }),
   columnHelper.accessor(row => row.startTime, {
@@ -78,7 +80,7 @@ const OrderTable = ({orders} : OrderTableProps) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th key={header.id} className='border text-left p-3'>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -99,9 +101,9 @@ const OrderTable = ({orders} : OrderTableProps) => {
             </tr>
             ) : 
             (table.getRowModel().rows.map((footerGroup) => (
-            <tr key={footerGroup.id}>
+            <tr key={footerGroup.id} className='border'>
               {footerGroup.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td key={cell.id} className='p-2 border'>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -112,7 +114,7 @@ const OrderTable = ({orders} : OrderTableProps) => {
           {table.getFooterGroups().map(footerGroup => (
             <tr key={footerGroup.id}>
               {footerGroup.headers.map(header => (
-                <th key={header.id}>
+                <th key={header.id} className='border text-left p-3'>
                   {header.isPlaceholder
                     ? null
                     : flexRender(

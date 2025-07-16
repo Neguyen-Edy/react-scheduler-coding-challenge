@@ -23,7 +23,7 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, nextId, submit
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     const newOrder: Order = {
-      ...data, orderId: nextId.current.toString(),
+      ...data, orderId: nextId.current.toString(), status: "Pending"
     };
     setOrders([...orders, newOrder]);
     nextId.current += 1;
