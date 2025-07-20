@@ -4,6 +4,7 @@ type ResourceStatus = 'Available' | 'Busy';
 
 interface Order {
   orderId: string,
+  title: string,
   resourceId: string,
   status: OrderStatus,
   startTime: string,

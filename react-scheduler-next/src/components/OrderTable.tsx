@@ -1,26 +1,35 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-// import predefinedResources from '../../data/resources';
 import { Order } from '../../types/prod';
+import { useRouter } from 'next/navigation';
 
 const columnHelper = createColumnHelper<Order>();
 
 const columns = [
   columnHelper.accessor('orderId', {
-    cell: info => info.getValue(),
+    cell: info => <Link href={{pathname:"/orders/newOrder", query: {id: info.getValue()}}}>
+      {info.getValue()}
+      </Link>,
     footer: info => info.column.id,
   }),
   columnHelper.accessor(row => row.resourceId, {
     id: 'Resource Id',
     cell: info => <i>{info.getValue()}</i>,
     header: () => <span>Resource Id</span>,
+    footer: info => info.column.id,
+  }),
+  columnHelper.accessor(row => row.title, {
+    id: 'Title',
+    cell: info => <i>{info.getValue()}</i>,
+    header: () => <span>Title</span>,
     footer: info => info.column.id,
   }),
   columnHelper.accessor(row => row.status, {
@@ -64,6 +73,7 @@ interface OrderTableProps {
 const OrderTable = ({orders} : OrderTableProps) => {
 
   const [data] = useState(() => [...orders]);
+  const router = useRouter();
 
   console.log(orders);
 
@@ -89,6 +99,7 @@ const OrderTable = ({orders} : OrderTableProps) => {
                       )}
                 </th>
               ))}
+              <th className='border text-left p-3'>Actions</th>
             </tr>
           ))}
         </thead>
@@ -100,13 +111,21 @@ const OrderTable = ({orders} : OrderTableProps) => {
               </td>
             </tr>
             ) : 
-            (table.getRowModel().rows.map((footerGroup) => (
-            <tr key={footerGroup.id} className='border'>
-              {footerGroup.getVisibleCells().map((cell) => (
+            (table.getRowModel().rows.map((rowGroup) => (
+            <tr key={rowGroup.id} className='border'>
+              {rowGroup.getVisibleCells().map((cell) => (
                 <td key={cell.id} className='p-2 border'>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
+              <td className='flex flex-col gap-2 p-4'>
+                <button onClick={() => router.push(`/orders/newOrder?id=${0}`)} className='border rounded-4xl hover:bg-gray-200'>
+                  Edit Order
+                </button>
+                <button className='border rounded-4xl hover:bg-gray-200'>
+                  Schedule Order
+                </button>
+              </td>
             </tr>
           )))}
         </tbody>
@@ -123,6 +142,7 @@ const OrderTable = ({orders} : OrderTableProps) => {
                       )}
                 </th>
               ))}
+              <th className='border text-left p-3'>Actions</th>
             </tr>
           ))}
         </tfoot>
@@ -132,3 +152,21 @@ const OrderTable = ({orders} : OrderTableProps) => {
 }
 
 export default OrderTable
+
+// {
+//     id: "action",
+//     header: "Actions",
+//     cell: (row: { original: Order; }) => {
+//       const order = row.original;
+//       return (
+//         <div>
+//           <button>
+//             Edit Order
+//           </button>
+//           <button>
+//             Schedule Order
+//           </button>
+//         </div>
+//       );
+//     }
+//   }

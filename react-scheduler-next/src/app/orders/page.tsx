@@ -11,11 +11,12 @@ const Page = () => {
 
   return (
     <>
-        <OrderTable orders={orders}/>
-        <button onClick={() => router.push("/orders/newOrder")}>
-          Create New Order
-        </button>
-        {/* <OrderForm orders={orders} setOrders={setOrders} resources={resources} nextId={nextId} /> */}
+        <div className='flex flex-col gap-5'>
+          <OrderTable orders={orders}/>
+          <button onClick={() => router.push("/orders/newOrder")} className='rounded-4xl bg-amber-100 p-2 hover:bg-amber-300'>
+            Create New Order
+          </button>
+        </div>
     </>
   )
 }

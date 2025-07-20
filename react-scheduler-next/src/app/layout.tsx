@@ -10,6 +10,8 @@ import { Order } from "../../types/prod";
 interface OrdersContextType {
   orders: Order[];
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
+  id: number,
+  setId: React.Dispatch<React.SetStateAction<number>>
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -44,18 +46,18 @@ export default function RootLayout({
 }>) {
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [id, setId] = useState(0);
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      <nav>
-        <Link href='/dashboard'> Dashboard </Link>
-        <Link href='/orders'> Order List </Link>
-        {/* <Link href='/orders/newOrder'> New Order </Link> */}
+      <nav className="bg-gray-600 text-white font-bold flex gap-4 p-4">
+        <Link href='/dashboard' className="hover:text-amber-300 hover:shadow-2xs"> Dashboard </Link>
+        <Link href='/orders' className="hover:text-amber-300 hover:shadow-2xs"> Order List </Link>
       </nav>
-      <OrdersContext.Provider value={{orders, setOrders}}>
+      <OrdersContext.Provider value={{orders, setOrders, id, setId}}>
           {children}
       </OrdersContext.Provider>
       </body>

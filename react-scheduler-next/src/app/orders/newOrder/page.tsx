@@ -1,20 +1,23 @@
 'use client';
 
-import { useRef } from 'react'
 import OrderForm from '../../../components/OrderForm';
 import predefinedResources from '../../../../data/resources';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useOrderContext } from '@/app/layout';
 
 const Page = () => {
-  const nextId = useRef(0);
+  // const nextId = useRef(0);
   const router = useRouter();
   const {orders, setOrders} = useOrderContext();
 
+  const orderIdParam = useSearchParams();
+  const defaultOrderId = orderIdParam.get("id");
+  const order = orders.find((o) => o.orderId === defaultOrderId);
+  // console.log("New nextId:", nextId.current);
+
   return (
     <>
-      <div className='bg-indigo-950/20'>Orders</div>
-      <OrderForm orders={orders} setOrders={setOrders} resources={predefinedResources} nextId={nextId} submitSuccess={(() => router.push('/orders'))}/>
+      <OrderForm defaultValues={order} orders={orders} setOrders={setOrders} resources={predefinedResources} submitSuccess={(() => router.push('/orders'))}/>
     </>
   )
 };
