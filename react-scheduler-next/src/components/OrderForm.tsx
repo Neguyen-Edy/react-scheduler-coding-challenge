@@ -56,15 +56,16 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
         <div className='bold text-2xl'>Order Form</div>
 
         <div>
-          <label className='block font-bold'> Order Title </label>
-          <input {...register("title", {required: "Title Required" })} type='text' className='border rounded-4xl w-2/3 p-4' />
+          <label htmlFor='order-title' className='block font-bold'> Order Title </label>
+          <input {...register("title", {required: "Title Required" })} type='text' id='order-title' className='border rounded-4xl w-2/3 p-4' />
+          <div>
+            {errors.title && <span> {errors.title.message} </span>}
+          </div>
         </div>
 
         <div>
-          <label className='block font-bold'>
-            Resource
-          </label>
-          <select {...register("resourceId", {required: "Resource is Required"})} className='border rounded p-2 w-2/3'>
+          <label htmlFor='order-resource' className='block font-bold'> Resource </label>
+          <select {...register("resourceId", {required: "Resource is Required"})} id='order-resource' className='border rounded p-2 w-2/3'>
             <option value=""> SELECT RESOURCE </option>
             {resources.map((r, index) => (
               <option key={index} value={r.id}> {r.name} </option>
@@ -76,16 +77,16 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
         </div>
 
         <div>
-          <label className='block'> Start Time </label>
-          <input {...register("startTime", { required: "Start Date Required" })} type='datetime-local' className='border rounded-4xl w-2/3 p-4' />
+          <label className='block' htmlFor='order-start'> Start Time </label>
+          <input {...register("startTime", { required: "Start Date Required" })} type='datetime-local' id='order-start' className='border rounded-4xl w-2/3 p-4' />
           <div>
             {errors.startTime && <span> {errors.startTime.message} </span>}
           </div>
         </div>
 
         <div>
-          <label className='block'> End Time </label>
-          <input {...register("endTime", { required: "End Date Required" })} type='datetime-local' className='border rounded-4xl w-2/3 p-4' />
+          <label className='block' htmlFor='order-end'> End Time </label>
+          <input {...register("endTime", { required: "End Date Required" })} type='datetime-local' id='order-end' className='border rounded-4xl w-2/3 p-4' />
           <div>
             {errors.endTime && <span> {errors.endTime.message} </span>}
           </div>

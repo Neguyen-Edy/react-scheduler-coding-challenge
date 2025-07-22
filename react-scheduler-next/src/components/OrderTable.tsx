@@ -119,7 +119,7 @@ const OrderTable = ({orders} : OrderTableProps) => {
                 </td>
               ))}
               <td className='flex flex-col gap-2 p-4'>
-                <button onClick={() => router.push(`/orders/newOrder?id=${0}`)} className='border rounded-4xl hover:bg-gray-200'>
+                <button onClick={() => router.push(`/orders/newOrder?id=${rowGroup.getValue("orderId")}`)} className='border rounded-4xl hover:bg-gray-200'>
                   Edit Order
                 </button>
                 <button className='border rounded-4xl hover:bg-gray-200'>
