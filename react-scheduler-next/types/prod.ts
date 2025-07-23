@@ -1,6 +1,6 @@
-type OrderStatus = 'Pending' | 'Scheduled';
+export type OrderStatus = 'Pending' | 'Scheduled';
 
-type ResourceStatus = 'Available' | 'Busy';
+export type ResourceStatus = 'Available' | 'Busy';
 
 interface Order {
   orderId: string,

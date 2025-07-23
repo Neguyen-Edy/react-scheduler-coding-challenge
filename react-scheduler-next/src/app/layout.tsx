@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { Order } from "../../types/prod";
 
 interface OrdersContextType {
@@ -47,6 +47,28 @@ export default function RootLayout({
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [id, setId] = useState(0);
+
+  useEffect(() => {
+    const storedOrders = localStorage.getItem('orders');
+    if (storedOrders) {
+      try {
+        setOrders(JSON.parse(storedOrders));
+      } catch (e) {
+        console.error("Invalid JSON in localStorage for 'orders'");
+      }
+    }
+
+    const savedId = localStorage.getItem('id');
+    if (savedId) setId(Number(savedId));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('orders', JSON.stringify(orders));
+  }, [orders]);
+
+  useEffect(() => {
+    localStorage.setItem('id', id.toString());
+  }, [id]);
 
   return (
     <html lang="en">
