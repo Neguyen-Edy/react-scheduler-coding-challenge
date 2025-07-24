@@ -90,7 +90,7 @@ test.describe("Order Editing Tests", () => {
             await page.waitForTimeout(200);
         }
 
-        await page.locator("table").getByTestId("0").click();
+        await page.locator("table").getByTestId("0-edit").click();
         await page.waitForTimeout(200);
         await expect(page.getByLabel("Title")).toHaveValue("Test Order 12");
         await expect(page.getByLabel("Resource")).toHaveValue("3");

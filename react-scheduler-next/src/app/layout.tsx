@@ -11,7 +11,7 @@ interface OrdersContextType {
   orders: Order[];
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
   id: number,
-  setId: React.Dispatch<React.SetStateAction<number>>
+  setId: React.Dispatch<React.SetStateAction<number>>,
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);

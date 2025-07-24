@@ -79,11 +79,11 @@ interface ColumnFilters {
 
 const OrderTable = ({orders} : OrderTableProps) => {
 
-  const [data] = useState(() => [...orders]);
+  const data = orders;
   const [columnFilters, setColumnFilters] = useState<ColumnFilters[]>([]);
   const router = useRouter();
 
-  // console.log(orders);
+  console.log(orders);
 
   const table = useReactTable({
     data,
@@ -153,7 +153,7 @@ const OrderTable = ({orders} : OrderTableProps) => {
                 No Orders Found
               </td>
             </tr>
-            ) : 
+          ) : 
             (table.getRowModel().rows.map((rowGroup) => (
             <tr key={rowGroup.id} className='border'>
               {rowGroup.getVisibleCells().map((cell) => (
