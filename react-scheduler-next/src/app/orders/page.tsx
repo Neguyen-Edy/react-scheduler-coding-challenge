@@ -7,12 +7,12 @@ import { useOrderContext } from '../layout';
 
 const Page = () => {
   const router = useRouter();
-  const { orders } = useOrderContext();
+  const { orders, setOrders } = useOrderContext();
 
   return (
     <>
         <div className='flex flex-col gap-5'>
-          <OrderTable orders={orders}/>
+          <OrderTable orders={orders} setOrders={setOrders}/>
           <button onClick={() => router.push("/orders/newOrder")} className='rounded-4xl bg-amber-100 p-2 hover:bg-amber-300'>
             Create New Order
           </button>

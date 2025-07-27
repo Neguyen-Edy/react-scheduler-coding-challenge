@@ -9,9 +9,9 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Order } from '../../types/prod';
+import { Order, OrderStatus } from '../../types/prod';
 import { useRouter } from 'next/navigation';
-import { OrderStatus } from '../../types/prod';
+// import predefinedResources from '../../data/resources';
 
 const columnHelper = createColumnHelper<Order>();
 
@@ -70,6 +70,7 @@ const columns = [
 
 interface OrderTableProps {
   orders: Order[],
+  setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
 }
 
 interface ColumnFilters {
@@ -77,7 +78,9 @@ interface ColumnFilters {
   value: OrderStatus | string
 }
 
-const OrderTable = ({orders} : OrderTableProps) => {
+const SCHEDULED: OrderStatus = "Scheduled";
+
+const OrderTable = ({orders, setOrders} : OrderTableProps) => {
 
   const data = orders;
   const [columnFilters, setColumnFilters] = useState<ColumnFilters[]>([]);
@@ -103,7 +106,36 @@ const OrderTable = ({orders} : OrderTableProps) => {
     })
   );
 
-  console.log(columnFilters);
+  const submitOrder = (orderId : string) => {    
+    const updatedOrders = orders.map((order) => {
+      if (order.orderId === orderId) {
+        return { ...order, status: SCHEDULED };
+      }
+      return order;
+    }); 
+    
+    updatedOrders.forEach((o, i) => {
+      if (Array.isArray(o)) console.log(`${i} has an array`)
+      console.log(`index ${i}`, o);
+    })
+    console.log(updatedOrders);
+
+    setOrders(updatedOrders);
+  };
+
+  const deleteOrder = (orderId : string) => {    
+    const updatedOrders = orders.filter((order) => order.orderId !== orderId); 
+    
+    updatedOrders.forEach((o, i) => {
+      if (Array.isArray(o)) console.log(`${i} has an array`)
+      console.log(`index ${i}`, o);
+    })
+    console.log(updatedOrders);
+
+    setOrders(updatedOrders);
+  };
+
+  // console.log(columnFilters);
 
   return (
     <div className='p-2'>
@@ -165,8 +197,11 @@ const OrderTable = ({orders} : OrderTableProps) => {
                 <button onClick={() => router.push(`/orders/newOrder?id=${rowGroup.getValue("orderId")}`)} data-testid={`${rowGroup.getValue("orderId")}-edit`} className='border rounded-4xl hover:bg-gray-200'>
                   Edit Order
                 </button>
-                <button className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-schedule`}>
+                <button onClick={() => submitOrder(rowGroup.getValue("orderId"))} className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-schedule`}>
                   Schedule Order
+                </button>
+                <button onClick={() => deleteOrder(rowGroup.getValue("orderId"))} className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-delete`}>
+                  Delete Order
                 </button>
               </td>
             </tr>

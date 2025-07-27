@@ -1,13 +1,19 @@
-// import DashboardChart from "../../components/DashboardChart"
+'use client';
+
+import DashboardChart from "../../components/DashboardChart";
+import { useOrderContext } from "../layout";
 
 
-const page = () => {
+const Page = () => {
+
+  const { orders } = useOrderContext();
+
   return (
     <>
-      <div className="bg-amber-300">Dashboard</div>
-      {/* <DashboardChart /> */}
+      {/* <div className="bg-amber-300">Dashboard</div> */}
+      <DashboardChart orders={orders}/>
     </>
   )
 }
 
-export default page
+export default Page;

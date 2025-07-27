@@ -15,7 +15,6 @@ interface FormProps {
   orders: Order[],
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>,
   resources: Resource[],
-  // nextId: React.RefObject<number>,
   submitSuccess: () => void,
 };
 
