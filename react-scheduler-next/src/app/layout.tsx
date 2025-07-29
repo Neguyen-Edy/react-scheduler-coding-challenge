@@ -5,13 +5,16 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { createContext, useState, useContext, useEffect } from "react";
-import { Order } from "../../types/prod";
+import { Order, Resource } from "../../types/prod";
+import predefinedResources from "../../data/resources";
 
 interface OrdersContextType {
   orders: Order[];
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
   id: number,
   setId: React.Dispatch<React.SetStateAction<number>>,
+  resources: Resource[],
+  setResources: React.Dispatch<React.SetStateAction<Resource[]>>,
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -47,6 +50,7 @@ export default function RootLayout({
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [id, setId] = useState(0);
+  const [resources, setResources] = useState(predefinedResources);
 
   useEffect(() => {
     const storedOrders = localStorage.getItem('orders');
@@ -58,8 +62,17 @@ export default function RootLayout({
       }
     }
 
-    const savedId = localStorage.getItem('id');
-    if (savedId) setId(Number(savedId));
+    const storedId = localStorage.getItem('id');
+    if (storedId) setId(Number(storedId));
+
+    const storedResources = localStorage.getItem('resources');
+    if (storedResources) {
+      try {
+        setResources(JSON.parse(storedResources));
+      } catch (e) {
+        console.error("Invalid JSON in localStorage for 'resources'");
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -70,6 +83,10 @@ export default function RootLayout({
     localStorage.setItem('id', id.toString());
   }, [id]);
 
+  useEffect(() => {
+    localStorage.setItem('resources', JSON.stringify(resources));
+  }, [resources]);
+
   return (
     <html lang="en">
       <body
@@ -79,7 +96,7 @@ export default function RootLayout({
         <Link href='/dashboard' className="hover:text-amber-300 hover:shadow-2xs"> Dashboard </Link>
         <Link href='/orders' className="hover:text-amber-300 hover:shadow-2xs"> Order List </Link>
       </nav>
-      <OrdersContext.Provider value={{orders, setOrders, id, setId}}>
+      <OrdersContext.Provider value={{orders, setOrders, id, setId, resources, setResources}}>
           {children}
       </OrdersContext.Provider>
       </body>

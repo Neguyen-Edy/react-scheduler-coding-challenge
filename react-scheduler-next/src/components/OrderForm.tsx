@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import orderSchema from '../../lib/zodvalidation';
 import type { Order, Resource } from '../../types/prod';
@@ -22,30 +22,97 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
 
   const {id, setId} = useOrderContext();
 
-  const {register, handleSubmit, formState: { errors }, reset} = useForm<Inputs>({
+  const {register, handleSubmit, setError, formState: { errors }, reset, control} = useForm<Inputs>({
     resolver: zodResolver(orderSchema), defaultValues,
   });  
 
+  const selectedResourceId = useWatch({
+    control,
+    name: "resourceId",
+  });
+
+  console.log(resources);
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (defaultValues?.orderId) {
+      console.log(data);
+      console.log(defaultValues);
+      
+      const updatedOrder = {
+        ...defaultValues, ...data
+      };
+
+      console.log(updatedOrder);
+
+      if (checkTimeConflicts(updatedOrder, orders)) {
+        setError("startTime", {
+          type: "manual",
+          message: "This resource is already booked during this time. Please choose another time.",
+        });
+        return;
+      }
+
       const updatedOrders = orders.map((o) => 
         o.orderId === defaultValues.orderId ? {...o, ...data} : o
       );
+
       setOrders(updatedOrders);
     }
     else {
       const newOrder: Order = {
         ...data, orderId: id.toString(), status: "Pending"
       };
-      setOrders([...orders, newOrder]);
-      setId(i => i + 1);
       console.log(newOrder);
+
+      if (!checkTimeConflicts(newOrder, orders)) {
+        setOrders([...orders, newOrder]);
+        setId(i => i + 1);
+        console.log("New id:", id);
+      }
+      else {
+        setError("startTime", {
+          type: "manual",
+          message: "This resource is already booked during that time.",
+        });
+        return;
+      }
     }
-    console.log(data);
-    console.log("New id:", id);
     reset();
     submitSuccess?.();
   };
+
+  //returns true if there is a time conflict; false otherwise
+  const checkTimeConflicts = (newOrder : Order | Inputs, orders : Order[]) => {
+    const newOrderStart = newOrder.startTime;
+    const newOrderEnd = newOrder.endTime;
+
+    return orders.some((order) => {
+      if (order.status === 'Pending') return false;
+      if (order.resourceId !== newOrder.resourceId) return false;
+
+      const existingOrderStart = order.startTime;
+      const existingOrderEnd = order.endTime;
+
+      return newOrderStart < existingOrderEnd && existingOrderStart < newOrderEnd;
+    });
+  };
+
+  const resourceBusyText = (resourceId : string) => {
+    if (defaultValues?.orderId) {
+      if (resourceId === defaultValues?.resourceId) return null;
+    }
+    
+    return (
+      <div>
+        <div className='font-bold text-red-800'> 
+          WARNING!!! THIS RESOURCE IS CURRENTLY BUSY!!!
+        </div>
+        <div className='font-bold text-red-800'> 
+          CHECK THE ORDER TABLE!!!
+        </div>
+      </div>
+    );
+  }
 
   console.log(errors);
 
@@ -66,13 +133,14 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
           <label htmlFor='order-resource' className='block font-bold'> Resource </label>
           <select {...register("resourceId", {required: "Resource is Required"})} id='order-resource' className='border rounded p-2 w-2/3'>
             <option value=""> SELECT RESOURCE </option>
-            {resources.map((r, index) => (
-              <option key={index} value={r.id}> {r.name} </option>
-            ))}
+            {resources.map((r, index) => {
+              return <option key={index} value={r.id}> {r.name} </option>
+            })}
           </select>
           <div>
             {errors.resourceId && <span> {errors.resourceId.message} </span>}
           </div>
+          {resources.find((r) => r.id === selectedResourceId)?.status === "Busy" && resourceBusyText(selectedResourceId)}
         </div>
 
         <div>

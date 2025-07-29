@@ -59,18 +59,24 @@ const DashboardChart = ({orders}: DashboardProps) => {
   const shiftedData = data.map((order) => {
     const startShifted = order.start - minTime;
     const endShifted = order.end - minTime;
+    const rowId = `${order.resourceId}-${order.orderId}`;
     return {
       ...order,
       start: startShifted,
       end: endShifted,
+      rowId
     };
   });
 
+  //only allow tool tip to show up if there is a green bar (duration !== 0)
   const customToolTip = ({ active, payload } : TooltipContentProps<ValueType, NameType>) => {
     if (active && payload && payload.length > 0 && payload.length > 1) {
       const order = payload[1];
+      console.log(payload)
       
       if (order.payload.duration === 0) return null;
+
+      
       
       return (
         <div className='border bg-white'>
@@ -107,12 +113,12 @@ const DashboardChart = ({orders}: DashboardProps) => {
   const padding = 3600000 * 6; // padding to shift the x-axis to 6 hours before min and after max
 
   return (
-    <div className='overflow-x-auto'>
+    <div className='overflow-x-auto' >
       {existingResourcesId.size === 0 ?
       (
         <div className='m-4 text-center p-30 border font-bold text-2xl'> No Orders To Display </div>
       ) : (
-        <div style={{ width: `${chartWidth}px`}}>
+        <div style={{ width: `${chartWidth}px`}} data-testid="orders-chart">
         <ResponsiveContainer width="100%" height={500}>
           <BarChart key={`${minTime}-${maxTime}`} width={2000} layout="vertical" 
             margin={{ top: 20, right: 30, left: 100, bottom: 20 }} data={shiftedData}>
@@ -127,10 +133,12 @@ const DashboardChart = ({orders}: DashboardProps) => {
                   minute: "2-digit",
                 })
             }}/>
-            <YAxis type='category' dataKey="resourceId" 
-              tickFormatter={(resourceId) => {
+            <YAxis type='category' dataKey="rowId" 
+              tickFormatter={(rowId) => {
+                if (typeof rowId !== "string") return "";
+                const [resourceId, orderId] = rowId.split('-');
                 const resource = predefinedResources.find(r => r.id === resourceId);
-                return resource ? `Resource: ${resource?.name}` : "";
+                return resource && orderId !== '0' ? `Resource: ${resource?.name}(Order ${orderId})` : `Resource: ${resource?.name}`;
               }}/>
 
             <Tooltip content={customToolTip} />

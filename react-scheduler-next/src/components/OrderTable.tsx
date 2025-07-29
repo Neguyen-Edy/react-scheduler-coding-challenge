@@ -9,9 +9,8 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Order, OrderStatus } from '../../types/prod';
+import { Order, OrderStatus, Resource, ResourceStatus } from '../../types/prod';
 import { useRouter } from 'next/navigation';
-// import predefinedResources from '../../data/resources';
 
 const columnHelper = createColumnHelper<Order>();
 
@@ -70,7 +69,9 @@ const columns = [
 
 interface OrderTableProps {
   orders: Order[],
-  setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
+  setOrders: React.Dispatch<React.SetStateAction<Order[]>>,
+  resources: Resource[],
+  setResources: React.Dispatch<React.SetStateAction<Resource[]>>,
 }
 
 interface ColumnFilters {
@@ -79,8 +80,10 @@ interface ColumnFilters {
 }
 
 const SCHEDULED: OrderStatus = "Scheduled";
+const BUSY: ResourceStatus = "Busy";
+const AVAILABLE: ResourceStatus = "Available";
 
-const OrderTable = ({orders, setOrders} : OrderTableProps) => {
+const OrderTable = ({orders, setOrders, resources, setResources} : OrderTableProps) => {
 
   const data = orders;
   const [columnFilters, setColumnFilters] = useState<ColumnFilters[]>([]);
@@ -98,41 +101,89 @@ const OrderTable = ({orders, setOrders} : OrderTableProps) => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  //Table Filtering
   const title = columnFilters.find((f) => f.id === "Title")?.value || "";
-  
+
   const onFilterChange = (id : string, value : string) => setColumnFilters(
     prev => prev.filter(f => f.id !== id).concat({
       id, value
     })
   );
 
-  const submitOrder = (orderId : string) => {    
-    const updatedOrders = orders.map((order) => {
+  //Scheduling Order
+  const scheduleOrder = (orderId : string, resourceId : string) => {    
+    const resource = resources.find((r) => r.id === resourceId);
+    const scheduledOrder = orders.find((o) => o.orderId === orderId);
+
+    //check if there is a time conflict if the resource is currently busy
+    if (resource && resource.status === 'Busy') {
+      if (scheduledOrder && checkTimeConflicts(scheduledOrder, orders)) {
+        alert("Resource Is Currently Busy");
+        return;
+      }
+    }
+
+    const updatedOrders = orders.map((order) => { //update order to scheduled
       if (order.orderId === orderId) {
         return { ...order, status: SCHEDULED };
       }
       return order;
     }); 
+
+    const updatedResources = resources.map((resource) => { //update resource to busy
+      if (resource.id === resourceId) {
+        return {...resource, status: BUSY}
+      }
+      return resource;
+    })
     
-    updatedOrders.forEach((o, i) => {
+    updatedOrders.forEach((o, i) => { //DEBUG LOG
       if (Array.isArray(o)) console.log(`${i} has an array`)
       console.log(`index ${i}`, o);
     })
     console.log(updatedOrders);
+    console.log(updatedResources);
 
     setOrders(updatedOrders);
+    setResources(updatedResources);
   };
 
-  const deleteOrder = (orderId : string) => {    
-    const updatedOrders = orders.filter((order) => order.orderId !== orderId); 
+  //returns true if there is a time conflict; false otherwise
+  const checkTimeConflicts = (newOrder : Order, orders : Order[]) => {
+    const newOrderStart = newOrder.startTime;
+    const newOrderEnd = newOrder.endTime;
     
+    return orders.some((order) => {
+      if (order.status === 'Pending') return false;
+      if (order.resourceId !== newOrder.resourceId) return false;
+  
+      const existingOrderStart = order.startTime;
+      const existingOrderEnd = order.endTime;
+  
+      return newOrderStart < existingOrderEnd && existingOrderStart < newOrderEnd;
+    });
+  };
+
+  //delete order, make resource available
+  const deleteOrder = (orderId : string, resourceId : string) => {    
+    const updatedOrders = orders.filter((order) => order.orderId !== orderId); 
+
     updatedOrders.forEach((o, i) => {
       if (Array.isArray(o)) console.log(`${i} has an array`)
       console.log(`index ${i}`, o);
     })
     console.log(updatedOrders);
 
+    const updatedResources = resources.map((resource) => { //update resource to available
+      if (resource.id === resourceId) {
+        return {...resource, status: AVAILABLE}
+      }
+      return resource;
+    })
+
+
     setOrders(updatedOrders);
+    setResources(updatedResources);
   };
 
   // console.log(columnFilters);
@@ -197,10 +248,10 @@ const OrderTable = ({orders, setOrders} : OrderTableProps) => {
                 <button onClick={() => router.push(`/orders/newOrder?id=${rowGroup.getValue("orderId")}`)} data-testid={`${rowGroup.getValue("orderId")}-edit`} className='border rounded-4xl hover:bg-gray-200'>
                   Edit Order
                 </button>
-                <button onClick={() => submitOrder(rowGroup.getValue("orderId"))} className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-schedule`}>
+                <button onClick={() => scheduleOrder(rowGroup.getValue("orderId"), rowGroup.getValue("Resource Id"))} className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-schedule`}>
                   Schedule Order
                 </button>
-                <button onClick={() => deleteOrder(rowGroup.getValue("orderId"))} className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-delete`}>
+                <button onClick={() => deleteOrder(rowGroup.getValue("orderId"), rowGroup.getValue("Resource Id"))} className='border rounded-4xl hover:bg-gray-200' data-testid={`${rowGroup.getValue("orderId")}-delete`}>
                   Delete Order
                 </button>
               </td>
