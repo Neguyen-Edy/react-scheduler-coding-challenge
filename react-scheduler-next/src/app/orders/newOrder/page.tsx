@@ -7,7 +7,7 @@ import { useOrderContext } from '@/app/layout';
 const Page = () => {
   // const nextId = useRef(0);
   const router = useRouter();
-  const {orders, setOrders, resources} = useOrderContext();
+  const {orders, setOrders, resources, setResources} = useOrderContext();
 
   const orderIdParam = useSearchParams();
   const defaultOrderId = orderIdParam.get("id");
@@ -16,7 +16,7 @@ const Page = () => {
 
   return (
     <>
-      <OrderForm defaultValues={order} orders={orders} setOrders={setOrders} resources={resources} submitSuccess={(() => router.push('/orders'))}/>
+      <OrderForm defaultValues={order} orders={orders} setOrders={setOrders} resources={resources} setResources={setResources} submitSuccess={(() => router.push('/orders'))}/>
     </>
   )
 };

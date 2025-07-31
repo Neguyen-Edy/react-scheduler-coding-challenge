@@ -135,7 +135,7 @@ const OrderTable = ({orders, setOrders, resources, setResources} : OrderTablePro
         return {...resource, status: BUSY}
       }
       return resource;
-    })
+    });
     
     updatedOrders.forEach((o, i) => { //DEBUG LOG
       if (Array.isArray(o)) console.log(`${i} has an array`)
@@ -167,6 +167,7 @@ const OrderTable = ({orders, setOrders, resources, setResources} : OrderTablePro
   //delete order, make resource available
   const deleteOrder = (orderId : string, resourceId : string) => {    
     const updatedOrders = orders.filter((order) => order.orderId !== orderId); 
+    const sharedResourceOrders = orders.filter((order) => order.resourceId === resourceId && order.status === 'Scheduled');
 
     updatedOrders.forEach((o, i) => {
       if (Array.isArray(o)) console.log(`${i} has an array`)
@@ -174,10 +175,9 @@ const OrderTable = ({orders, setOrders, resources, setResources} : OrderTablePro
     })
     console.log(updatedOrders);
 
-    const updatedResources = resources.map((resource) => { //update resource to available
-      if (resource.id === resourceId) {
-        return {...resource, status: AVAILABLE}
-      }
+    const updatedResources = resources.map((resource) => {
+      if (resource.id === resourceId && sharedResourceOrders.length === 1) return {...resource, status: AVAILABLE};
+
       return resource;
     })
 

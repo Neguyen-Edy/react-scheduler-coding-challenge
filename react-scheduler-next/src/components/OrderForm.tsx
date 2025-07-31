@@ -4,7 +4,7 @@ import React from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import orderSchema from '../../lib/zodvalidation';
-import type { Order, Resource } from '../../types/prod';
+import type { Order, Resource, ResourceStatus } from '../../types/prod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useOrderContext } from '@/app/layout';
 
@@ -15,10 +15,14 @@ interface FormProps {
   orders: Order[],
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>,
   resources: Resource[],
+  setResources: React.Dispatch<React.SetStateAction<Resource[]>>,
   submitSuccess: () => void,
 };
 
-const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess } : FormProps) => {
+const OrderForm = ({ defaultValues, orders, setOrders, resources, setResources, submitSuccess } : FormProps) => {
+
+  const BUSY: ResourceStatus = "Busy";
+  const AVAILABLE: ResourceStatus = "Available";
 
   const {id, setId} = useOrderContext();
 
@@ -44,7 +48,29 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
 
       console.log(updatedOrder);
 
+      const updatedResources = resources.map((resource) => { //update resources accordingly
+        if (resource.id === updatedOrder.resourceId) {
+          return {...resource, status: BUSY}
+        }
+
+        //check to see if there are other orders that share the same resource before edit to change resource status
+        for (const order of orders) {
+          if (order.orderId !== defaultValues.orderId) {
+            if (order.status === "Scheduled" && order.resourceId === defaultValues.resourceId) {
+              if (resource.id === defaultValues.resourceId) {
+                return {...resource, status: BUSY}
+              }
+            }
+          }
+        }
+
+        return {...resource, status: AVAILABLE};
+      });
+
+      console.log(updatedResources);
+
       if (checkTimeConflicts(updatedOrder, orders)) {
+        console.log("checked time conflicts");
         setError("startTime", {
           type: "manual",
           message: "This resource is already booked during this time. Please choose another time.",
@@ -57,6 +83,7 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
       );
 
       setOrders(updatedOrders);
+      setResources(updatedResources);
     }
     else {
       const newOrder: Order = {
@@ -86,9 +113,14 @@ const OrderForm = ({ defaultValues, orders, setOrders, resources, submitSuccess 
     const newOrderStart = newOrder.startTime;
     const newOrderEnd = newOrder.endTime;
 
+    console.log(newOrder);
+
     return orders.some((order) => {
       if (order.status === 'Pending') return false;
       if (order.resourceId !== newOrder.resourceId) return false;
+      if (order.orderId === newOrder.orderId) return false;
+
+      console.log(order);
 
       const existingOrderStart = order.startTime;
       const existingOrderEnd = order.endTime;
