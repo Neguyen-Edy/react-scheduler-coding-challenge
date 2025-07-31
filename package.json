@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "vite-tsconfig-paths": "^5.1.4",
-    "zod": "^4.0.5"
-  }
-}
