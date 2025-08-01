@@ -3,10 +3,10 @@
 import React from 'react';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import orderSchema from '../../lib/zodvalidation';
-import type { Order, Resource, ResourceStatus } from '../../types/prod';
+import orderSchema from '@/lib/zodvalidation';
+import type { Order, Resource, ResourceStatus } from '@/types/prod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useOrderContext } from '@/app/layout';
+import { useOrderContext } from '@/components/context/OrderProvider';
 
 type Inputs = z.infer<typeof orderSchema>;
 

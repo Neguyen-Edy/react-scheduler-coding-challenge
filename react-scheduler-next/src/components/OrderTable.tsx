@@ -9,7 +9,7 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Order, OrderStatus, Resource, ResourceStatus } from '../../types/prod';
+import { Order, OrderStatus, Resource, ResourceStatus } from '@/types/prod';
 import { useRouter } from 'next/navigation';
 
 const columnHelper = createColumnHelper<Order>();

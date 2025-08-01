@@ -1,12 +1,14 @@
 import { test, expect, Page } from '@playwright/test';
 import { z } from 'zod';
-import orderSchema from '../lib/zodvalidation';
-import { Order, Resource } from '../types/prod';
+import orderSchema from '../src/lib/zodvalidation';
+import { Order, Resource } from '../src/types/prod';
 
 type FormData = z.infer<typeof orderSchema>;
 
 const createOrderTest = async ({ page, orderOverride = {} }: { page: Page; orderOverride?: Partial<FormData>; }) => {
-    await page.goto("http://localhost:3000/orders/newOrder");
+    await page.goto("http://localhost:3000/orders/newOrder", { waitUntil: 'domcontentloaded' });
+    await page.waitForURL("**/orders/newOrder");
+    
     await page.getByLabel("Order Title").fill(orderOverride.title || "Dummy Order");
     await page.getByLabel("Resource").selectOption(orderOverride.resourceId || "1");
     await page.getByLabel("Start Time").fill(orderOverride.startTime || '2025-03-02T05:15');
@@ -48,13 +50,10 @@ test.describe("Order Creation Tests", () => {
     });
 
     test("Order Creation: test multiple order creation", async ({ page }) => {
-        await createOrderTest({page});
-        await createOrderTest({page});
-        await createOrderTest({page});
-        await createOrderTest({page});
-        await createOrderTest({page});
-        await createOrderTest({page});
-        await createOrderTest({page});
+        for (let i = 0; i < 7; ++i) {
+            await createOrderTest({page});
+            await page.waitForTimeout(50); 
+        }
 
         const orders : Order[] = await page.evaluate("JSON.parse(localStorage.getItem('orders'))");
         expect(orders).toHaveLength(7);

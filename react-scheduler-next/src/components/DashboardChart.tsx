@@ -1,8 +1,8 @@
 'use client';
 
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, TooltipContentProps } from 'recharts';
-import { Order } from '../../types/prod';
-import predefinedResources from '../../data/resources';
+import { Order } from '@/types/prod';
+import predefinedResources from '@/data/resources';
 import { useState } from 'react';
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 

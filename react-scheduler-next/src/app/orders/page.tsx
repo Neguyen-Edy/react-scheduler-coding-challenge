@@ -1,9 +1,9 @@
 'use client';
 
 // import OrderForm from '@/components/OrderForm';
-import OrderTable from '../../components/OrderTable'
+import OrderTable from '@/components/OrderTable'
 import { useRouter } from 'next/navigation';
-import { useOrderContext } from '../layout';
+import { useOrderContext } from '@/components/context/OrderProvider';
 
 const Page = () => {
   const router = useRouter();

@@ -1,7 +1,7 @@
 'use client';
 
-import DashboardChart from "../../components/DashboardChart";
-import { useOrderContext } from "../layout";
+import DashboardChart from "@/components/DashboardChart";
+import { useOrderContext } from "@/components/context/OrderProvider";
 
 
 const Page = () => {
