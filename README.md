@@ -58,7 +58,7 @@ If you want to run the development server, run this command
     - Order Viewing
        - All created orders can be viewed.
      - Order Filtering
-       - Users are able to filter orders by selecting an orders status. Users are also able to filter by text input. The table filters the orders based how similar are the titles are based on the input. You can use both filters simultaneously. 
+       - Users are able to filter orders by selecting an orders status. Users are also able to filter by text input. The table filters the orders based how similar are the titles are to the input. You can use both filters simultaneously. 
 
    Each order are provided three buttons that allow the user to perform three actions on a single order:
     - Order Editing
